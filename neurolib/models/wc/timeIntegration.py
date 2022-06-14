@@ -78,11 +78,17 @@ def timeIntegration(params):
 
     exc_ext = params["exc_ext"]
     inh_ext = params["inh_ext"]
+    
+    control_term_E = params["control_term_E"]
+    control_term_I = params["control_term_I"]
 
     # state variable arrays, have length of t + startind
     # they store initial conditions AND simulated data
     excs = np.zeros((N, startind + len(t)))
     inhs = np.zeros((N, startind + len(t)))
+    
+    brackets_E = np.zeros((N, len(t)))
+    brackets_I = np.zeros((N, len(t)))
 
     # ------------------------------------------------------------------------
     # Set initial values
@@ -146,6 +152,10 @@ def timeIntegration(params):
         inh_ou_mean,
         tau_ou,
         sigma_ou,
+        control_term_I,
+        control_term_E,
+        brackets_E,
+        brackets_I
     )
 
 
@@ -183,6 +193,10 @@ def timeIntegration_njit_elementwise(
     inh_ou_mean,
     tau_ou,
     sigma_ou,
+    control_term_I,
+    control_term_E,
+    brackets_E,
+    brackets_I
 ):
     ### integrate ODE system:
 
@@ -221,7 +235,7 @@ def timeIntegration_njit_elementwise(
                         + exc_ext
                     )  # external input
                     + exc_ou[no]  # ou noise
-                )
+                ) + control_term_E[no, i-1]
             )
             inh_rhs = (
                 1
@@ -235,12 +249,15 @@ def timeIntegration_njit_elementwise(
                         + inh_ext
                     )  # external input
                     + inh_ou[no]  # ou noise
-                )
+                ) + control_term_I[no, i-1]
             )
 
             # Euler integration
             excs[no, i] = excs[no, i - 1] + dt * exc_rhs
             inhs[no, i] = inhs[no, i - 1] + dt * inh_rhs
+            
+            brackets_E[no, i - startind] = c_excexc * excs[no, i - 1] - c_inhexc * inhs[no, i - 1] + exc_input_d[no] + exc_ext
+            brackets_I[no, i - startind] =  c_excinh * excs[no, i - 1] - c_inhinh * inhs[no, i - 1] + inh_ext
 
             # Ornstein-Uhlenbeck process
             exc_ou[no] = (
@@ -250,4 +267,4 @@ def timeIntegration_njit_elementwise(
                 inh_ou[no] + (inh_ou_mean - inh_ou[no]) * dt / tau_ou + sigma_ou * sqrt_dt * noise_inh[no]
             )  # mV/ms
 
-    return t, excs, inhs, exc_ou, inh_ou
+    return t, excs, inhs, exc_ou, inh_ou, brackets_E, brackets_I
