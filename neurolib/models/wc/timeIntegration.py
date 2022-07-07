@@ -201,11 +201,11 @@ def timeIntegration_njit_elementwise(
     ### integrate ODE system:
 
     def S_E(x):
-        return x
+        return 1/(x+1)
         #return 1.0 / (1.0 + np.exp(-a_exc * (x - mu_exc)))
 
     def S_I(x):
-        return x
+        return 1/(x+1)
         #return 1.0 / (1.0 + np.exp(-a_inh * (x - mu_inh)))
 
     for i in range(startind, startind + len(t)):
@@ -256,28 +256,7 @@ def timeIntegration_njit_elementwise(
                  + control_term_I[no, i-1]
                 )
             )
-            
-            exc_rhs = (
-                1
-                / tau_exc
-                * (
-                    -excs[no, i - 1]
-                    + 0
-                    + exc_ou[no]  # ou noise
-                 + control_term_E[no, i-1]
-                )
-            )
-            
-            inh_rhs = (
-                1
-                / tau_inh
-                * (
-                    -inhs[no, i - 1]
-                    + 0
-                    + inh_ou[no]  # ou noise
-                 + control_term_I[no, i-1]
-                )
-            )
+
 
 
             # Euler integration
