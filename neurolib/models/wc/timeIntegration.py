@@ -201,12 +201,12 @@ def timeIntegration_njit_elementwise(
     ### integrate ODE system:
 
     def S_E(x):
-        return 1/(x+1)
-        #return 1.0 / (1.0 + np.exp(-a_exc * (x - mu_exc)))
+        #return 1.0/(np.exp(-a_exc*(x-mu_exc))+1.0)
+        return 1.0 / (1.0 + np.exp(-a_exc * (x - mu_exc)))
 
     def S_I(x):
-        return 1/(x+1)
-        #return 1.0 / (1.0 + np.exp(-a_inh * (x - mu_inh)))
+        #return 1.0/(np.exp(-a_inh*(x-mu_inh))+1.0)
+        return 1.0 / (1.0 + np.exp(-a_inh * (x - mu_inh)))
 
     for i in range(startind, startind + len(t)):
 
