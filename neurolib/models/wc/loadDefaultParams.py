@@ -79,8 +79,8 @@ def loadDefaultParams(Cmat=None, Dmat=None, seed=None):
     params.exc_ou = np.zeros((params.N,))
     params.inh_ou = np.zeros((params.N,))
     
-    params.control_term_I = np.zeros((params.N, 30000))
-    params.control_term_E = np.zeros((params.N, 30000))
+    params.control_term_I = np.zeros((params.N, 20000))
+    params.control_term_E = np.zeros((params.N, 20000))
 
 
 
