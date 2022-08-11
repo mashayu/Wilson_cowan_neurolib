@@ -203,10 +203,12 @@ def timeIntegration_njit_elementwise(
     def S_E(x):
         #return 1.0/(np.exp(-a_exc*(x-mu_exc))+1.0)
         return 1.0 / (1.0 + np.exp(-a_exc * (x - mu_exc)))
+        #return 1.0 / (0.0 + np.exp(x))
 
     def S_I(x):
         #return 1.0/(np.exp(-a_inh*(x-mu_inh))+1.0)
         return 1.0 / (1.0 + np.exp(-a_inh * (x - mu_inh)))
+        #return 1.0 / (0.0 + np.exp(x))
 
     for i in range(startind, startind + len(t)):
 
